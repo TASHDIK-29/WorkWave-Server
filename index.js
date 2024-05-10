@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
@@ -17,9 +18,9 @@ app.use(express.json());
 
 
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.iepmiic.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.iepmiic.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-const uri = `mongodb+srv://WorkWave:Lok7Qk7Jz7hcpAhu@cluster0.iepmiic.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
 
 // 
 
@@ -47,7 +48,7 @@ async function run() {
 
         app.post('/post', async (req, res) => {
             const data = req.body;
-            // console.log(data);
+            console.log(data);
             const result = await postCollections.insertOne(data);
             res.send(result);
         })
