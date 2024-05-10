@@ -39,8 +39,9 @@ async function run() {
         // await client.connect();
 
         const postCollections = client.db("WorkWave").collection("posts");
+        const requestCollections = client.db("WorkWave").collection("requests");
 
-        app.get('/post', async(req, res) =>{
+        app.get('/post', async (req, res) => {
             const result = await postCollections.find().toArray();
 
             res.send(result);
@@ -48,18 +49,43 @@ async function run() {
 
         app.post('/post', async (req, res) => {
             const data = req.body;
-            // console.log(data);
+            console.log(data);
             const result = await postCollections.insertOne(data);
             res.send(result);
         })
 
+
+        // Request Apis
+
+        app.get('/request', async (req, res) => {
+            const result = await requestCollections.find().toArray();
+
+            res.send(result);
+        })
+
+        app.post('/request', async (req, res) => {
+            const data = req.body;
+            console.log(data);
+            const result = await requestCollections.insertOne(data);
+
+            // Update Number of Volunteer
+            const update = await postCollections.updateOne(
+                {
+                    postTitle: data.postTitle,
+                    orgEmail: data.orgEmail,
+                },
+                { $inc: { noOfVolunteers: -1 } }
+            )
+            res.send({result, update});
+        })
+
         // get single post by ID
-        app.get('/post/:id', async(req, res) =>{
+        app.get('/post/:id', async (req, res) => {
             const id = req.params.id;
             // console.log(id);
-            const query ={ _id : new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await postCollections.findOne(query);
-            
+
 
             res.send(result);
         })
