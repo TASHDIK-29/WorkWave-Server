@@ -116,6 +116,31 @@ async function run() {
             res.send(result);
         })
 
+        // Update single post by ID
+        app.put('/post/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const query = { _id: new ObjectId(id) }
+            const updatedPost = req.body;
+
+            const post={
+                $set:{
+                    deadline : updatedPost.deadline,
+                    orgEmail : updatedPost.orgEmail,
+                    orgName : updatedPost.orgName,
+                    description : updatedPost.description,
+                    location : updatedPost.location,
+                    thumbnail : updatedPost.thumbnail,
+                    noOfVolunteers : updatedPost.noOfVolunteers,
+                    category : updatedPost.category,
+                    postTitle : updatedPost.postTitle,
+                }
+            }
+
+            const result = await postCollections.updateOne(query, post);
+            res.send(result);
+        })
+
         // get posts by Email
         app.get('/myPost/:email', async (req, res) => {
             const email = req.params.email;
