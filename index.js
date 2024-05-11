@@ -79,6 +79,21 @@ async function run() {
             res.send({result, update});
         })
 
+        app.delete('/request', async (req, res) => {
+            const email = req.query.email;
+            const id = req.query.id;
+            // console.log(email, id);
+
+            const query ={
+                _id: new ObjectId(id),
+                volunteerEmail: email
+            }
+
+            const result = await requestCollections.deleteOne(query);
+            
+            res.send(result);
+        })
+
         // get single post by ID
         app.get('/post/:id', async (req, res) => {
             const id = req.params.id;
@@ -107,6 +122,16 @@ async function run() {
             // console.log(id);
             const query = { orgEmail : email }
             const result = await postCollections.find(query).toArray();
+
+
+            res.send(result);
+        })
+
+        app.get('/myRequest/:email', async (req, res) => {
+            const email = req.params.email;
+            // console.log(id);
+            const query = { volunteerEmail : email }
+            const result = await requestCollections.find(query).toArray();
 
 
             res.send(result);
