@@ -90,6 +90,28 @@ async function run() {
             res.send(result);
         })
 
+        // Delete single post by ID
+        app.delete('/post/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const query = { _id: new ObjectId(id) }
+            const result = await postCollections.deleteOne(query);
+
+
+            res.send(result);
+        })
+
+        // get posts by Email
+        app.get('/myPost/:email', async (req, res) => {
+            const email = req.params.email;
+            // console.log(id);
+            const query = { orgEmail : email }
+            const result = await postCollections.find(query).toArray();
+
+
+            res.send(result);
+        })
+
 
 
 
