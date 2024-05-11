@@ -15,7 +15,7 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 app.use(express.json());
-
+app.use(cookieParser());
 
 
 
@@ -34,6 +34,29 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+
+
+// custom Middleware
+
+const verifyToken = async (req, res, next) => {
+    const token = req.cookies?.token;
+    console.log('Token from verify section : ', token);
+    if (!token) {
+        return res.status(401).send({ massage: 'Not Authorized' })
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+        if (err) {
+            console.log(err);
+            return res.status(401).send({ massage: 'Not Authorized' });
+        }
+        console.log('value in the token', decoded);
+        req.user = decoded;
+        next();
+    })
+
+}
+
 
 
 const cookieOption = {
@@ -175,12 +198,22 @@ async function run() {
         })
 
         // get posts by Email
-        app.get('/myPost/:email', async (req, res) => {
+        app.get('/myPost/:email', verifyToken, async (req, res) => {
+            // const token = req.cookies.token;
+            // console.log('Token Here', token);
+
             const email = req.params.email;
-            // console.log(id);
+
+            console.log('From api',req.user.email);
+            console.log('From api 2',email);
+
+            // if(email !== req.user.email){
+            //     return res.status(403).send({massage : 'Forbidden Access'})
+            // }
+
+            
             const query = { orgEmail: email }
             const result = await postCollections.find(query).toArray();
-
 
             res.send(result);
         })
