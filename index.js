@@ -119,6 +119,13 @@ async function run() {
             res.send(result);
         })
 
+        // get limited data of most viewed
+        app.get('/mostViewed', async (req, res) => {
+            const result = await postCollections.find().sort({ view: -1 }).limit(6).toArray();
+
+            res.send(result);
+        })
+
         app.post('/post', async (req, res) => {
             const data = req.body;
             console.log(data);
