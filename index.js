@@ -90,8 +90,23 @@ async function run() {
             res.clearCookie('token', { ...cookieOption, maxAge: 0 }).send({ success: true });
         })
 
+
+
+        // Post
+
         app.get('/post', async (req, res) => {
-            const result = await postCollections.find().toArray();
+            const search = req.query.search;
+            console.log('from search', search);
+
+            let result;
+
+            if (search) {
+                const query = { postTitle: { $regex: search, $options: 'i' } };
+                result = await postCollections.find(query).toArray();
+            }
+            else {
+                result = await postCollections.find().toArray();
+            }
 
             res.send(result);
         })
@@ -204,14 +219,14 @@ async function run() {
 
             const email = req.params.email;
 
-            console.log('From api',req.user.email);
-            console.log('From api 2',email);
+            console.log('From api', req.user.email);
+            console.log('From api 2', email);
 
             // if(email !== req.user.email){
             //     return res.status(403).send({massage : 'Forbidden Access'})
             // }
 
-            
+
             const query = { orgEmail: email }
             const result = await postCollections.find(query).toArray();
 
