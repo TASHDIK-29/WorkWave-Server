@@ -166,11 +166,25 @@ async function run() {
             res.send(result);
         })
 
+
+        // // Update Number of Volunteer
+        // const update = await postCollections.updateOne(
+        //     {
+        //         postTitle: data.postTitle,
+        //         orgEmail: data.orgEmail,
+        //     },
+        //     { $inc: { noOfVolunteers: -1 } }
+        // )
+
         // get single post by ID
         app.get('/post/:id', async (req, res) => {
             const id = req.params.id;
             // console.log(id);
             const query = { _id: new ObjectId(id) }
+            
+
+            const update = await postCollections.updateOne(query, { $inc: { view: +1 } })
+
             const result = await postCollections.findOne(query);
 
 
