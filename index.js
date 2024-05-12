@@ -186,11 +186,14 @@ async function run() {
         // get single post by ID
         app.get('/post/:id', async (req, res) => {
             const id = req.params.id;
+            const view = req.query.view;
             // console.log(id);
             const query = { _id: new ObjectId(id) }
-            
 
-            const update = await postCollections.updateOne(query, { $inc: { view: +1 } })
+
+            if (!view) {
+                const update = await postCollections.updateOne(query, { $inc: { view: +1 } })
+            }
 
             const result = await postCollections.findOne(query);
 
@@ -268,10 +271,10 @@ async function run() {
 
         // Review 
 
-        app.post('/review', async(req, res) =>{
+        app.post('/review', async (req, res) => {
             const review = req.body;
 
-            review.createdAt= new Date();
+            review.createdAt = new Date();
 
             // console.log('from server',review);
 
@@ -279,7 +282,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/review', async(req, res) =>{
+        app.get('/review', async (req, res) => {
             const result = await reviewCollections.find().sort({ createdAt: -1 }).toArray();
 
             res.send(result);
