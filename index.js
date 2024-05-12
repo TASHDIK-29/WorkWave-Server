@@ -72,6 +72,7 @@ async function run() {
 
         const postCollections = client.db("WorkWave").collection("posts");
         const requestCollections = client.db("WorkWave").collection("requests");
+        const reviewCollections = client.db("WorkWave").collection("reviews");
 
 
         // JWT Generate
@@ -239,6 +240,26 @@ async function run() {
             const query = { volunteerEmail: email }
             const result = await requestCollections.find(query).toArray();
 
+
+            res.send(result);
+        })
+
+
+        // Review 
+
+        app.post('/review', async(req, res) =>{
+            const review = req.body;
+
+            review.createdAt= new Date();
+
+            // console.log('from server',review);
+
+            const result = await reviewCollections.insertOne(review);
+            res.send(result);
+        })
+
+        app.get('/review', async(req, res) =>{
+            const result = await reviewCollections.find().sort({ createdAt: -1 }).toArray();
 
             res.send(result);
         })
