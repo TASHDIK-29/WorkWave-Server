@@ -42,7 +42,7 @@ const verifyToken = async (req, res, next) => {
     const token = req.cookies?.token;
     console.log('Token from verify section : ', token);
     if (!token) {
-        return res.status(401).send({ massage: 'Not Authorized' })
+        return res.status(401).send({ massage: 'error' })
     }
 
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
@@ -80,14 +80,39 @@ async function run() {
             const user = req.body;
 
             const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
+            console.log('from jwt', token);
 
             res.cookie('token', token, cookieOption).send({ success: true });
         })
 
+
+
+
+        // app.post('/jwt', async (req, res) => {
+        //     const user = req.body;
+        //     console.log('user for token', user);
+        //     const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
+
+        //     res.cookie('token', token, {
+        //         httpOnly: true,
+        //         secure: true,
+        //         sameSite: 'none'
+        //     })
+        //         .send({ success: true });
+        // })
+
         // Clear cookie when Logout
-        app.get('/logout', async (req, res) => {
-            // const user = req.body;
-            // console.log('logout user :', user);
+        // app.get('/logout', async (req, res) => {
+        //     // const user = req.body;
+        //     // console.log('logout user :', user);
+        //     res.clearCookie('token', { ...cookieOption, maxAge: 0 }).send({ success: true });
+        // })
+
+
+
+        app.post('/logout', async (req, res) => {
+            const user = req.body;
+            console.log('logout user :', user);
             res.clearCookie('token', { ...cookieOption, maxAge: 0 }).send({ success: true });
         })
 
@@ -247,9 +272,9 @@ async function run() {
             console.log('From api', req.user.email);
             console.log('From api 2', email);
 
-            // if(email !== req.user.email){
-            //     return res.status(403).send({massage : 'Forbidden Access'})
-            // }
+            if(email !== req.user.email){
+                return res.status(403).send({massage : 'Forbidden Access'})
+            }
 
 
             const query = { orgEmail: email }
@@ -258,9 +283,10 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/myRequest/:email', async (req, res) => {
+        app.get('/myRequest/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
             // console.log(id);
+            console.log(email);
             const query = { volunteerEmail: email }
             const result = await requestCollections.find(query).toArray();
 
